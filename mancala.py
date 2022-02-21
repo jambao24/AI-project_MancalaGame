@@ -51,7 +51,7 @@ class Player:
   def __init__(self, isPlayer1) -> None:
     self.isPlayer1 = isPlayer1
 
-  def getNextMove(self, boardState) -> int:
+  def getNextMove(self, boardState: np.array) -> int:
     pass
 
 

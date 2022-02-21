@@ -4,12 +4,17 @@ from randomPlayer import RandomPlayer
 def main():
   player1 = RandomPlayer(True)
   player2 = RandomPlayer(False)
-  result = MancalaGame(player1,player2).run()
-  if result == 1:
-    print("Player 1 Won!")
-  elif result == 0:
-    print("Tie Game!")
-  else:
-    print("Player 2 Won!")
+  player1_wins = 0
+  player2_wins = 0
+  tie_games = 0
+  for _ in range(500):
+    result = MancalaGame(player1, player2).run()
+    if result == 1:
+      player1_wins += 1
+    elif result == -1:      
+      player2_wins += 1
+    else:
+      tie_games += 1
+  print(f"Player 1 record: {player1_wins}-{player2_wins}-{tie_games} of games")
 
 main()
