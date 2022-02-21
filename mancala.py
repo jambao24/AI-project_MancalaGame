@@ -27,7 +27,7 @@ class MancalaBoard:
     if (isPlayer1Move and i == self.P1_STORE) or (not isPlayer1Move and i == self.P2_STORE):
       return True
     elif ((isPlayer1Move and i < 6) or (not isPlayer1Move and i > 6)) and self.board[i] == 1:
-      self.capturePit(i + 7 if i < 6 else i - 7)
+      self.capturePit(12 - i)
     return False
 
   def capturePit(self, i):
