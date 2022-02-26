@@ -20,11 +20,19 @@ class MancalaBoard:
     inHand = self.board[i]
     self.board[i] = 0
     while(inHand != 0):
-      i = 0 if i == 13 else i + 1
+      # skip the opponent's store
+      if i == self.P2_STORE or (i == self.P2_STORE - 1 and isPlayer1Move):
+        i = 0
+      elif i == self.P1_STORE - 1 and not isPlayer1Move:
+        i += 2
+      else:
+        i += 1
       self.board[i] += 1
       inHand -= 1
+    # go again if last move is in player's store.
     if (isPlayer1Move and i == self.P1_STORE) or (not isPlayer1Move and i == self.P2_STORE):
       return True
+    # capture pit if last move is in player's own empty pit.
     elif ((isPlayer1Move and i < 6) or (not isPlayer1Move and i > 6)) and self.board[i] == 1:
       self.capturePit(i)
     return False
@@ -39,6 +47,7 @@ class MancalaBoard:
     self.board[i] = 0
     self.board[12 - i] = 0
 
+  # at the end of the game you collect the remaining stones into the store.
   def collectRemaining(self):
     self.board[self.P1_STORE] += sum(self.board[0:6])
     self.board[self.P2_STORE] += sum(self.board[7:13])
