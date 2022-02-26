@@ -1,20 +1,20 @@
 import numpy as np
 
-class TurnEndAction:
-  TURN_END = 0
-  GO_AGAIN = 1
-  CAPTURE_PIT = 2
-
 class MancalaBoard:
 
   P1_STORE = 6
   P2_STORE = 13
 
   def __init__(self) -> None:
+    # board is moving the stones clockwise during the game
+    # indices 0-5 are player 1's pits
+    # index 6 is player 1's store
+    # indices 7-12 are player 2's pits
+    # index 13 is player 2's store
     self.board = np.array([4,4,4,4,4,4,0,4,4,4,4,4,4,0])
 
   # returns true Go again
-  def playPit(self, i) -> TurnEndAction:
+  def playPit(self, i) -> bool:
     assert i != self.P1_STORE and i != self.P2_STORE
     isPlayer1Move = i < 6
     inHand = self.board[i]

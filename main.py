@@ -7,7 +7,7 @@ def main():
   player1_wins = 0
   player2_wins = 0
   tie_games = 0
-  for _ in range(500):
+  for _ in range(1000):
     result = MancalaGame(player1, player2).run()
     if result == 1:
       player1_wins += 1
