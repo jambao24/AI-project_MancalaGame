@@ -26,24 +26,31 @@ class MancalaBoard:
     if (isPlayer1Move and i == self.P1_STORE) or (not isPlayer1Move and i == self.P2_STORE):
       return True
     elif ((isPlayer1Move and i < 6) or (not isPlayer1Move and i > 6)) and self.board[i] == 1:
-      self.capturePit(12 - i)
+      self.capturePit(i)
     return False
 
   def capturePit(self, i):
-    if i > self.P1_STORE and i < self.P2_STORE:
+    if i < self.P1_STORE:
       self.board[self.P1_STORE] += self.board[i]
+      self.board[self.P1_STORE] += self.board[12 - i]
     else:
       self.board[self.P2_STORE] += self.board[i]
+      self.board[self.P2_STORE] += self.board[12 - i]
     self.board[i] = 0
+    self.board[12 - i] = 0
+
+  def collectRemaining(self):
+    self.board[self.P1_STORE] += sum(self.board[0:6])
+    self.board[self.P2_STORE] += sum(self.board[7:13])
 
   def isGameOver(self):
     return sum(self.board[0:6]) == 0 or sum(self.board[7:13]) == 0
 
   def isPlayer1Winning(self):
-    return self.board[6] > self.board[13]
+    return self.board[self.P1_STORE] > self.board[self.P2_STORE]
 
   def isGameTie(self):
-    return self.board[6] == self.board[13]
+    return self.board[self.P1_STORE] == self.board[self.P2_STORE]
 
 
 class Player:
@@ -70,6 +77,7 @@ class MancalaGame:
       nextMove = currPlayer.getNextMove(self.board.board)
       if not self.board.playPit(nextMove):
         self.isPlayer1Turn = not self.isPlayer1Turn
+    self.board.collectRemaining()
     if self.board.isPlayer1Winning():
       return 1
     elif self.board.isGameTie():

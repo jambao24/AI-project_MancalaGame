@@ -46,7 +46,7 @@ class TestMancalaBoard(unittest.TestCase):
   def test_capture_pit(self):
     self.board.board = np.array([4,4,4,4,0,5,1,5,5,4,4,4,4,0])
     go_again = self.board.playPit(0)
-    self.assertTrue((self.board.board == [0,5,5,5,1,5,6,5,0,4,4,4,4,0]).all())
+    self.assertTrue((self.board.board == [0,5,5,5,0,5,7,5,0,4,4,4,4,0]).all())
     self.assertEqual(sum(self.board.board), 48)
     self.assertFalse(go_again)
 
