@@ -37,6 +37,33 @@ class MancalaBoard:
       self.capturePit(i)
     return False
 
+  def playPits(self, moves):
+    val = False
+    for i in moves:
+      val = self.playPit(i)
+    return val
+
+  # takes a move list so that you can formulate a lookahead 
+  def lookAhead(self, move, board = None) -> np.array:
+    cache = self.board.copy()
+    self.board = self.board if board is None else board.copy()
+    self.playPit(move)
+    lookAheadBoard = self.board
+    self.board = cache
+    return lookAheadBoard
+
+  def getValidMoves(self, isPlayer1, board = None):
+    moves = []
+    board = self.board if board is None else board
+    nonZero = np.nonzero(board[:6])[0] if isPlayer1 else np.nonzero(board[7:13])[0] + 7
+    store = self.P1_STORE if isPlayer1 else self.P2_STORE
+    for i in nonZero:
+      if (board[i] + i) % 14 == store:
+        moves += list(map(lambda x: [i] + x, self.getValidMoves(isPlayer1, self.lookAhead(i,board))))
+      else:
+        moves.append([i])
+    return moves
+
   def capturePit(self, i):
     if i < self.P1_STORE:
       self.board[self.P1_STORE] += self.board[i]

@@ -63,3 +63,23 @@ class TestMancalaBoard(unittest.TestCase):
     self.assertTrue(self.board.isGameOver())
     self.board.board = np.array([4,4,4,4,4,4,15,0,0,0,0,0,0,10])
     self.assertTrue(self.board.isGameOver())
+
+  def test_lookahead(self):
+    self.board.board = np.array([4,4,4,4,4,4,0,4,4,4,4,4,4,0])
+    lookahead1 = self.board.lookAhead(3)
+    lookahead2 = self.board.lookAhead(8, lookahead1)
+    self.assertTrue((lookahead1 == [4,4,4,0,5,5,1,5,4,4,4,4,4,0]).all())
+    self.assertTrue((lookahead2 == [4,4,4,0,5,5,1,5,0,5,5,5,5,0]).all())
+    self.assertTrue((self.board.board == [4,4,4,4,4,4,0,4,4,4,4,4,4,0]).all())
+    self.assertEqual(sum(self.board.board), 48)
+
+  def test_validMoves(self):
+    self.board.board = np.array([4,4,4,4,4,4,0,4,4,4,4,4,4,0])
+    moves1 = self.board.getValidMoves(True)
+    moves2 = self.board.getValidMoves(False)
+    print(moves1)
+    print(moves2)
+    self.assertTrue(moves1 == [[0], [1], [2, 0],[2, 1],[2, 3],[2, 4],[2, 5],[3],[4],[5]])
+    self.assertTrue(moves2 == [[7], [8], [9, 7],[9, 8],[9, 10],[9, 11],[9, 12],[10],[11],[12]])
+    self.assertTrue((self.board.board == [4,4,4,4,4,4,0,4,4,4,4,4,4,0]).all())
+    self.assertEqual(sum(self.board.board), 48)
