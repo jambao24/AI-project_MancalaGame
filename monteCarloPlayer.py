@@ -1,4 +1,4 @@
-#from fcntl import F_SEAL_SEAL
+from asyncio.windows_events import NULL
 import numpy as np
 from randomPlayer import RandomPlayer
 from mancala import Player, MancalaBoard
@@ -26,6 +26,7 @@ class monteCarloPlayer(Player):
       d = 0
       isFirst = True
       isPlayer1Turn = True
+      firstMove = NULL
       while(d < self.depth and not board.isGameOver()):
         if isPlayer1Turn:
           currPlayer = player1
@@ -37,7 +38,7 @@ class monteCarloPlayer(Player):
           isFirst = False
           firstMove = nextMove
         if nextMove == 6 or nextMove == 13:
-          print(f'out of bounds')
+          print(f'out of bounds2')
         if not board.playPit(nextMove):
           isPlayer1Turn = not isPlayer1Turn
       if board.isGameOver():
@@ -47,7 +48,7 @@ class monteCarloPlayer(Player):
     for r in range(0,14): 
       if playsToEvalPlays[r]>0:
         playsToEvalAvgs[r] = playsToEvalStones[r]/playsToEvalPlays[r]
-    movement = np.where(playsToEvalAvgs == np.amax(playsToEvalAvgs))
+    movement = np.where(playsToEvalAvgs == np.amax(playsToEvalAvgs[:6]))
 
     return movement[0][0]
     
@@ -74,7 +75,7 @@ class monteCarloPlayer(Player):
           isFirst = False
           firstMove = nextMove
         if nextMove == 6 or nextMove == 13:
-          print(f'out of bounds')
+          print(f'out of bounds2')
         if not board.playPit(nextMove):
           isPlayer1Turn = not isPlayer1Turn
       if board.isGameOver():
@@ -84,6 +85,6 @@ class monteCarloPlayer(Player):
     for r in range(0,14): 
       if playsToEvalPlays[r] > 0:
         playsToEvalAvgs[r] = playsToEvalStones[r]/playsToEvalPlays[r]
-    movement = np.where(playsToEvalAvgs == np.amax(playsToEvalAvgs))
+    movement = np.where(playsToEvalAvgs == np.amax(playsToEvalAvgs[7:13]))
 
     return movement[0][0]

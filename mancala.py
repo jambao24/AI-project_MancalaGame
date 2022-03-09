@@ -109,10 +109,14 @@ class MancalaGame:
   # returns 1 if Player 1 won
   def run(self):
     while(not self.board.isGameOver()):
-      currPlayer = self.player1 if self.isPlayer1Turn else self.player2
+      if self.isPlayer1Turn:
+        currPlayer = self.player1
+      else:
+        currPlayer = self.player2
+#      currPlayer = self.player1 if self.isPlayer1Turn else self.player2
       nextMove = currPlayer.getNextMove(self.board.board)
       if nextMove == 6 or nextMove == 13:
-          print(f'out of bounds')
+          print(f'out of bounds1')
       if not self.board.playPit(nextMove):
         self.isPlayer1Turn = not self.isPlayer1Turn
     self.board.collectRemaining()
