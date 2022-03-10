@@ -56,7 +56,7 @@ class monteCarloPlayer(Player):
     playsToEvalStones = [0]*14
     playsToEvalPlays = [0]*14
     playsToEvalAvgs = [0.0]*14
-    for _ in self.sample_s:
+    for _ in range(0, self.sample_s):
       player1 = RandomPlayer(True)
       player2 = RandomPlayer(False)
       board = MancalaBoard()

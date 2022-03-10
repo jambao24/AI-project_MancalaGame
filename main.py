@@ -5,8 +5,10 @@ from monteCarloPlayer import monteCarloPlayer
 
 def main():
 #  player1 = DeepQPlayer(True) 
-  player1 = monteCarloPlayer(True)
-  player2 = RandomPlayer(False)
+#  player1 = monteCarloPlayer(True)
+#  player2 = RandomPlayer(False)
+  player1 = RandomPlayer(True)
+  player2 = monteCarloPlayer(False)
   player1_wins = 0
   player2_wins = 0
   tie_games = 0
