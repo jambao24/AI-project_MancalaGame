@@ -1,14 +1,16 @@
 #from deepQPlayer import DeepQPlayer
 from mancala import MancalaGame
 from randomPlayer import RandomPlayer
-from monteCarloPlayer import monteCarloPlayer
+#from monteCarloPlayer import monteCarloPlayer
+from minimaxPlayer import MinimaxPlayer
 
 def main():
 #  player1 = DeepQPlayer(True) 
 #  player1 = monteCarloPlayer(True)
 #  player2 = RandomPlayer(False)
   player1 = RandomPlayer(True)
-  player2 = monteCarloPlayer(False)
+#  player2 = monteCarloPlayer(False)
+  player2 = MinimaxPlayer(False)
   player1_wins = 0
   player2_wins = 0
   tie_games = 0
