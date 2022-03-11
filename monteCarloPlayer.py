@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import numpy as np
 from randomPlayer import RandomPlayer
 from mancala import Player, MancalaBoard
@@ -26,7 +25,7 @@ class monteCarloPlayer(Player):
       d = 0
       isFirst = True
       isPlayer1Turn = True
-      firstMove = NULL
+      firstMove = None
       while(d < self.depth and not board.isGameOver()):
         if isPlayer1Turn:
           currPlayer = player1
