@@ -15,13 +15,13 @@ class MinimaxPlayer(Player):
 
         board = MancalaBoard()
         board.board = np.copy(boardState)
-        bestMove = self.minimax(board, 0, True, True)
+        bestMove = self.minimax1(board, 0, True)
         return bestMove[0]
 
     def getNextMove2(self, boardState) -> int:
         board = MancalaBoard()
         board.board = np.copy(boardState)
-        bestMove = self.minimax(board, 0, True, False)      
+        bestMove = self.minimax2(board, 0, True)      
         return bestMove[0]
 
     # function -> minimax 
@@ -32,95 +32,94 @@ class MinimaxPlayer(Player):
     # player -> true (maximizer) | false (minimizer)
     # player1 -> true (player1) | false (player2)
 
-    def minimax(self, boardState, depth, player, player1):
-       
-        if player1 == True:
-            #Player 1
-            if depth == 4:
-                maxStonesInPit = -math.inf
-                indexResultingInMaxPit = -1
-                stoneSet = []
-                for x in range(0, boardState.P1_STORE):
-                
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x, board.board[boardState.P1_STORE]])
-                    stoneSet.append(board.board[boardState.P1_STORE])
-                return tuple([stoneSet.index(max(stoneSet)),max(stoneSet)])
+    def minimax1(self, boardState, depth, player):
+        #Player 1
+        if depth == 4:
+            maxStonesInPit = -math.inf
+            indexResultingInMaxPit = -1
+            stoneSet = []
+            for x in range(0, boardState.P1_STORE):
+            
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x, board.board[boardState.P1_STORE]])
+                stoneSet.append(board.board[boardState.P1_STORE])
+            return tuple([stoneSet.index(max(stoneSet)),max(stoneSet)])
 
-            if player == True:
-                minStonesInPit = math.inf
-                indexResultingInMinPit = -1
-                stoneSet = []
-                for x in range(0, boardState.P1_STORE):
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x, board.board[boardState.P1_STORE]])
-                    stoneSet.append(board.board[boardState.P1_STORE])
-                    store = self.minimax(board, depth + 1, False, True)[1]
-                    stoneSet[x] += store
-                return tuple([stoneSet.index(max(stoneSet)),max(stoneSet)])
-            else:
-                minStonesInPit = math.inf
-                indexResultingInMinPit = -1
-                stoneSet = []
-                for x in range(7, boardState.P2_STORE):
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x-7, board.board[boardState.P1_STORE]])
-                    stoneSet.append(board.board[boardState.P1_STORE])
-                    store = self.minimax(board, depth + 1, True, True)[1]
-                    
-                    stoneSet[x-7] += store
-                return tuple([stoneSet.index(min(stoneSet)),min(stoneSet)])
+        if player == True:
+            minStonesInPit = math.inf
+            indexResultingInMinPit = -1
+            stoneSet = []
+            for x in range(0, boardState.P1_STORE):
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x, board.board[boardState.P1_STORE]])
+                stoneSet.append(board.board[boardState.P1_STORE])
+                store = self.minimax1(board, depth + 1, False)[1]
+                stoneSet[x] += store
+            return tuple([stoneSet.index(max(stoneSet)),max(stoneSet)])
         else:
-            #Player 2
-            if depth == 4:
-                maxStonesInPit = -math.inf
-                indexResultingInMaxPit = -1
-                stoneSet = []
-                for x in range(7, boardState.P2_STORE):
+            minStonesInPit = math.inf
+            indexResultingInMinPit = -1
+            stoneSet = []
+            for x in range(7, boardState.P2_STORE):
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x-7, board.board[boardState.P1_STORE]])
+                stoneSet.append(board.board[boardState.P1_STORE])
+                store = self.minimax1(board, depth + 1, True)[1]
                 
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x, board.board[boardState.P2_STORE]])
-                    stoneSet.append(board.board[boardState.P2_STORE])
-                return tuple([stoneSet.index(max(stoneSet))+ 7,max(stoneSet)])
+                stoneSet[x-7] += store
+            return tuple([stoneSet.index(min(stoneSet)),min(stoneSet)])
 
-            if player == True:
-                minStonesInPit = math.inf
-                indexResultingInMinPit = -1
-                stoneSet = []
-                for x in range(7, boardState.P2_STORE):
-                
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x, board.board[boardState.P2_STORE]])
-                    stoneSet.append(board.board[boardState.P2_STORE])
-                    store = self.minimax(board, depth + 1, False, False)[1]
-                    stoneSet[x-7] += store
-                return tuple([stoneSet.index(max(stoneSet)) + 7,max(stoneSet)])
-            else:
-                minStonesInPit = math.inf
-                indexResultingInMinPit = -1
-                stoneSet = []
-                for x in range(7, boardState.P2_STORE):
-                    board = MancalaBoard()
-                    board.board = np.copy(boardState.board)
-                    board.playPit(x)
-                    if board.isGameOver():
-                        return tuple([x, board.board[boardState.P2_STORE]])
-                    stoneSet.append(board.board[boardState.P2_STORE])
-                    store = self.minimax(board, depth + 1, True, False)[1]
-                    stoneSet[x-7] += store
-                return tuple([stoneSet.index(min(stoneSet)) + 7,min(stoneSet)])
+    def minimax2(self, boardState, depth, player):
+        #Player 2
+        if depth == 4:
+            maxStonesInPit = -math.inf
+            indexResultingInMaxPit = -1
+            stoneSet = []
+            for x in range(7, boardState.P2_STORE):
+            
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x, board.board[boardState.P2_STORE]])
+                stoneSet.append(board.board[boardState.P2_STORE])
+            return tuple([stoneSet.index(max(stoneSet))+ 7,max(stoneSet)])
+
+        if player == True:
+            minStonesInPit = math.inf
+            indexResultingInMinPit = -1
+            stoneSet = []
+            for x in range(7, boardState.P2_STORE):
+            
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x, board.board[boardState.P2_STORE]])
+                stoneSet.append(board.board[boardState.P2_STORE])
+                store = self.minimax2(board, depth + 1, False)[1]
+                stoneSet[x-7] += store
+            return tuple([stoneSet.index(max(stoneSet)) + 7,max(stoneSet)])
+        else:
+            minStonesInPit = math.inf
+            indexResultingInMinPit = -1
+            stoneSet = []
+            for x in range(7, boardState.P2_STORE):
+                board = MancalaBoard()
+                board.board = np.copy(boardState.board)
+                board.playPit(x)
+                if board.isGameOver():
+                    return tuple([x, board.board[boardState.P2_STORE]])
+                stoneSet.append(board.board[boardState.P2_STORE])
+                store = self.minimax2(board, depth + 1, True)[1]
+                stoneSet[x-7] += store
+            return tuple([stoneSet.index(min(stoneSet)) + 7,min(stoneSet)])
