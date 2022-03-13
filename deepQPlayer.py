@@ -14,18 +14,16 @@ import numpy as np
 from mancala import MancalaBoard, Player
 from randomPlayer import RandomPlayer
 
-n_steps = 500_000
+n_steps = 12500
 batch_size = 128
-gamma = 0.99
-eps_start = 1.0
-eps_end = 0.1
-eps_steps = 200_000
+gamma = 0.999
+eps_start = .9
+eps_end = 0.05
+eps_steps = 200
 target_update = 10
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class MancalaTrainer(gym.Env):
   reward_range = (-np.inf, np.inf)
@@ -39,9 +37,11 @@ class MancalaTrainer(gym.Env):
         "player 1 wins": 0,
         "player 2 wins": 0,
     }
+    self.didPlay1Win = False
 
   def reset(self):
     self.board = MancalaBoard()
+    self.didPlay1Win = False
     return self.board.board
 
   def step(self, i):
@@ -49,13 +49,20 @@ class MancalaTrainer(gym.Env):
     if self.board.board[i] == 0:
       reward = -10
     else:
+      initScore = self.board.board[6]
       goAgain = self.board.playPit(i)
-      reward = 10 if self.board.isPlayer1Winning() else 0
+      if not self.didPlay1Win and self.board.isPlayer1Winning():
+        reward = 10
+        self.didPlay1Win = True 
+      else: 
+        reward = self.board.board[6] - initScore
     if self.board.isGameOver():
       self.summary["total games"] += 1
       if self.board.isGameTie(): self.summary["ties"] += 1
       elif self.board.isPlayer1Winning(): self.summary["player 1 wins"] += 1
-      else: self.summary["player 2 wins"] += 1
+      else: 
+        self.summary["player 2 wins"] += 1
+        reward = -10
     return (self.board.board, reward, self.board.isGameOver(), goAgain)
 
   def render(self, mode: str = "human"):
@@ -68,30 +75,36 @@ class DeepQPlayer(Player):
   def __init__(self, isPlayer1) -> None:
     super().__init__(isPlayer1)
     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    self.playCount = dict.fromkeys(range(0,6), 0)
+    self.playCount["random"] = 0
     if(os.path.exists("models/dqnModel.pt")):
       self.model = load_model("models/dqnModel.pt", self.device)
     else:
       self.model = None
 
   def getNextMove(self, boardState: np.array) -> int:
-    action, _ = select_model_action(self.device, self.model, torch.tensor([boardState], dtype=torch.float).to(device), 0)
+    action, _ = select_model_action(self.device, self.model, torch.tensor([boardState], dtype=torch.float).to(self.device), 0.05)
+    self.playCount[action.item()] += 1
+    if boardState[action.item()] == 0:
+      self.playCount["random"] += 1
+      return np.random.choice(np.nonzero(boardState[:6])[0])
     return action.item()
 
   def train(self):
-    logging.info("Beginning training on: {}".format(device))
+    logging.info("Beginning training on: {}".format(self.device))
     old_summary = {
         "total games": 0,
         "ties": 0,
         "player 1 wins": 0,
         "player 2 wins": 0,
     }
-    policy = Policy(n_inputs=14, n_outputs=6).to(device)
-    target = Policy(n_inputs=14, n_outputs=6).to(device)
+    policy = Policy(n_inputs=14, n_outputs=6).to(self.device)
+    target = Policy(n_inputs=14, n_outputs=6).to(self.device)
     player2 = RandomPlayer(False)
     target.load_state_dict(policy.state_dict())
     target.eval()
     env = MancalaTrainer()
-    state = torch.tensor([env.reset()], dtype=torch.float).to(device)
+    state = torch.tensor([env.reset()], dtype=torch.float).to(self.device)
     optimizer = optim.Adam(policy.parameters(), lr=1e-3)
     player1GoAgain = False
     player2GoAgain = False
@@ -99,7 +112,7 @@ class DeepQPlayer(Player):
       t = np.clip(step / eps_steps, 0, 1)
       eps = (1 - t) * eps_start + t * eps_end
 
-      action, _ = select_model_action(device, policy, state, eps)
+      action, _ = select_model_action(self.device, policy, state, eps)
       next_state, reward, done, player1GoAgain = env.step(action.item())
 
       # player 2 goes
@@ -107,15 +120,15 @@ class DeepQPlayer(Player):
           while(True):
             next_state, _, done, player2GoAgain = env.step(player2.getNextMove(next_state))
             if done or not player2GoAgain: break
-          next_state = torch.tensor([next_state], dtype=torch.float).to(device)
+          next_state = torch.tensor([next_state], dtype=torch.float).to(self.device)
       if done:
           next_state = None
 
-      memory.push(state, action, next_state, torch.tensor([reward], device=device))
+      memory.push(state, action, next_state, torch.tensor([reward], device=self.device))
 
       state = next_state
       optimize_model(
-          device=device,
+          device=self.device,
           optimizer=optimizer,
           policy=policy,
           target=target,
@@ -124,7 +137,7 @@ class DeepQPlayer(Player):
           gamma=gamma,
       )
       if done:
-          state = torch.tensor([env.reset()], dtype=torch.float).to(device)
+          state = torch.tensor([env.reset()], dtype=torch.float).to(self.device)
       if step % target_update == 0:
           target.load_state_dict(policy.state_dict())
       if step % 5000 == 0:
@@ -263,3 +276,6 @@ def select_model_action(
             ),
             True,
         )
+
+if __name__ == "__main__":
+  DeepQPlayer(True).train()

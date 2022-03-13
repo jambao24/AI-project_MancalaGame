@@ -15,7 +15,8 @@ class MancalaBoard:
 
   # returns true Go again
   def playPit(self, i) -> bool:
-    assert i != self.P1_STORE and i != self.P2_STORE
+    assert i != self.P1_STORE and i != self.P2_STORE, "cannot play the store!"
+    assert self.board[i] != 0, "move must have stones in pit!"
     isPlayer1Move = i < 6
     inHand = self.board[i]
     self.board[i] = 0
@@ -115,6 +116,8 @@ class MancalaGame:
         currPlayer = self.player2
 #      currPlayer = self.player1 if self.isPlayer1Turn else self.player2
       nextMove = currPlayer.getNextMove(self.board.board)
+      assert ((nextMove < 6 and currPlayer == self.player1) or 
+       (nextMove > 6 and currPlayer == self.player2), "currPlayer {currPlayer}: {nextMove}")
       if nextMove == 6 or nextMove == 13:
           print(f'out of bounds1')
       if not self.board.playPit(nextMove):
