@@ -55,7 +55,7 @@ def main(a, b):
   tie_games = 0
 
   #for r in range(0, 1000):
-  for r in range(0, 100):
+  for r in range(0, 1000):
     result = MancalaGame(player1, player2).run()
     if result == 1:
       player1_wins += 1
@@ -71,10 +71,10 @@ def main(a, b):
 
 
 '''run every possible combination of Player 1 vs Player 2 (5 different algorithms)'''
-for i, j in itertools.product(range(5), range(5)):
-  main(i, j)
+#for i, j in itertools.product(range(5), range(5)):
+#  main(i, j)
 
-#main(2,2)
+main(0,3)
 
 '''
 experimenting with different depth value pairs (1-1, 2-1, 3-2, 3-1, 4-4) 

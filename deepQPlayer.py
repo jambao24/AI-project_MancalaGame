@@ -81,14 +81,27 @@ class DeepQPlayer(Player):
       self.model = load_model("models/dqnModel.pt", self.device)
     else:
       self.model = None
+    if isPlayer1:
+      self.getNextMove = self.getNextMove1
+    else:
+      self.getNextMove = self.getNextMove2
 
-  def getNextMove(self, boardState: np.array) -> int:
+  def getNextMove1(self, boardState: np.array) -> int:
     action, _ = select_model_action(self.device, self.model, torch.tensor([boardState], dtype=torch.float).to(self.device), 0.05)
     self.playCount[action.item()] += 1
     if boardState[action.item()] == 0:
       self.playCount["random"] += 1
       return np.random.choice(np.nonzero(boardState[:6])[0])
     return action.item()
+
+  def getNextMove2(self, boardState: np.array) -> int:
+    p2Board = np.concatenate((boardState[7:],boardState[:7]))
+    action, _ = select_model_action(self.device, self.model, torch.tensor([p2Board], dtype=torch.float).to(self.device), 0.05)
+    self.playCount[action.item()] += 1
+    if p2Board[action.item()] == 0:
+      self.playCount["random"] += 1
+      return np.random.choice(np.nonzero(p2Board[:6])[0]) + 7
+    return action.item() + 7
 
   def train(self):
     logging.info("Beginning training on: {}".format(self.device))
