@@ -1,5 +1,6 @@
 #from deepQPlayer import DeepQPlayer
 from mancala import MancalaGame
+from maxPlayer import MaxPlayer
 from randomPlayer import RandomPlayer
 #from monteCarloPlayer import monteCarloPlayer
 from minimaxPlayer import MinimaxPlayer
@@ -7,10 +8,11 @@ from minimaxPlayer import MinimaxPlayer
 def main():
 #  player1 = DeepQPlayer(True) 
 #  player1 = monteCarloPlayer(True)
-#  player2 = RandomPlayer(False)
-  player1 = RandomPlayer(True)
+  player1 = MaxPlayer(False)
+  player2 = RandomPlayer(True)
+  #player1 = RandomPlayer(True)
 #  player2 = monteCarloPlayer(False)
-  player2 = MinimaxPlayer(False)
+  #player2 = MinimaxPlayer(False)
   player1_wins = 0
   player2_wins = 0
   tie_games = 0
@@ -22,7 +24,7 @@ def main():
       player2_wins += 1
     else:
       tie_games += 1
-    print(f'r: {r}')
+    #print(f'r: {r}')
   print(f"Player 1 record: {player1_wins}-{player2_wins}-{tie_games} of games")
 
 # def train():
