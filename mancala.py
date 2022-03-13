@@ -1,5 +1,7 @@
 import numpy as np
 
+currPlayer = None
+
 class MancalaBoard:
 
   P1_STORE = 6
@@ -16,7 +18,7 @@ class MancalaBoard:
   # returns true Go again
   def playPit(self, i) -> bool:
     assert i != self.P1_STORE and i != self.P2_STORE, "cannot play the store!"
-    assert self.board[i] != 0, "Pit #{i} move must have stones in pit!"
+    assert self.board[i] != 0, f"Pit #{i}, Player: {currPlayer} move must have stones in pit!"
     isPlayer1Move = i < 6
     inHand = self.board[i]
     self.board[i] = 0
@@ -109,6 +111,7 @@ class MancalaGame:
 
   # returns 1 if Player 1 won
   def run(self):
+    global currPlayer
     while(not self.board.isGameOver()):
       if self.isPlayer1Turn:
         currPlayer = self.player1
@@ -116,8 +119,7 @@ class MancalaGame:
         currPlayer = self.player2
 #      currPlayer = self.player1 if self.isPlayer1Turn else self.player2
       nextMove = currPlayer.getNextMove(self.board.board)
-      assert ((nextMove < 6 and currPlayer == self.player1) or 
-       (nextMove > 6 and currPlayer == self.player2), "currPlayer {currPlayer}: {nextMove}")
+      assert (nextMove < 6 and currPlayer == self.player1) or (nextMove > 6 and currPlayer == self.player2), f"currPlayer {type(currPlayer).__name__}: {nextMove}"
       if nextMove == 6 or nextMove == 13:
           print(f'out of bounds1')
       if not self.board.playPit(nextMove):

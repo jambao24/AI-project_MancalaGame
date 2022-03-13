@@ -16,7 +16,7 @@ class monteCarloPlayer(Player):
   def getNextMove1(self, boardState) -> int:
     playsToEvalStones = [0]*14
     playsToEvalPlays = [0]*14
-    playsToEvalAvgs = [0.0]*14
+    playsToEvalAvgs = [-np.inf if x > 6 or boardState[x] == 0 else -0.0 for x in range(14)]
     for _ in range(0, self.sample_s):
       player1 = RandomPlayer(True)
       player2 = RandomPlayer(False)
@@ -54,7 +54,7 @@ class monteCarloPlayer(Player):
   def getNextMove2(self, boardState) -> int:
     playsToEvalStones = [0]*14
     playsToEvalPlays = [0]*14
-    playsToEvalAvgs = [0.0]*14
+    playsToEvalAvgs = [-np.inf if x < 7 or boardState[x] == 0 else -0.0 for x in range(14)]
     for _ in range(0, self.sample_s):
       player1 = RandomPlayer(True)
       player2 = RandomPlayer(False)
@@ -85,5 +85,5 @@ class monteCarloPlayer(Player):
       if playsToEvalPlays[r] > 0:
         playsToEvalAvgs[r] = playsToEvalStones[r]/playsToEvalPlays[r]
     movement = np.where(playsToEvalAvgs == np.amax(playsToEvalAvgs[7:13]))
-
+    
     return movement[0][0]
