@@ -16,7 +16,7 @@ class MancalaBoard:
   # returns true Go again
   def playPit(self, i) -> bool:
     assert i != self.P1_STORE and i != self.P2_STORE, "cannot play the store!"
-    assert self.board[i] != 0, "move must have stones in pit!"
+    assert self.board[i] != 0, "Pit #{i} move must have stones in pit!"
     isPlayer1Move = i < 6
     inHand = self.board[i]
     self.board[i] = 0
